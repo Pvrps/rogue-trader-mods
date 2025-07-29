@@ -5,7 +5,6 @@ using Kingmaker.Blueprints;
 using System.Linq;
 using System.Collections.Generic;
 using Purps.RogueTrader.Logging;
-using Purps.RogueTrader.Patches;
 using Purps.RogueTrader.Behaviours;
 using System.Reflection;
 
@@ -54,7 +53,7 @@ namespace Purps.RogueTrader
             {
                 if (!ModObjects.Any(go => go != null))
                 {
-                    RegisterGameObject<BuffOverlayBehaviour>();
+                    RegisterGameObject<DebugOverlayBehaviour>();
                 }
             }
             else
