@@ -1,0 +1,121 @@
+# Ignore Visual Studio temporary files, build results, and
+# user-specific files
+
+lib/
+
+# Build results
+[Dd]ebug/
+[Rr]elease/
+x64/
+x86/
+[Aa][Rr][Mm]/
+[Aa][Rr][Mm]64/
+bin/
+obj/
+[Ll]og/
+TestResults/
+out/
+
+# User-specific files
+.vs/
+.vscode/
+*.user
+*.suo
+*.userosscache
+*.sln.docstates
+
+# Mono Auto Generated Files
+mono_crash.*
+
+# Windows image file caches
+Thumbs.db
+ehthumbs.db
+
+# ASP.NET Scaffolding
+ScaffoldingReadMe.txt
+
+# NuGet Packages
+*.nupkg
+# The packages folder can be ignored if it exists (NuGet 3+)
+packages/
+# NuGet Package restore
+.nuget/
+
+# Microsoft Azure Build Output
+csx/
+*.build.csdef
+
+# Resharper
+*.DotSettings.user
+
+# StyleCop
+StyleCopReport.xml
+
+# Files built by Visual Studio
+*_i.c
+*_p.c
+*_h.h
+*.ilk
+*.meta
+*.pdb
+*.pgc
+*.pgd
+*.rsp
+*.sbr
+*.tlh
+*.tli
+*.tmp
+*.vspscc
+*.vssscc
+*.dbmdl
+*.bak
+*.log
+*.dmp
+
+# Web Projects
+App_Data/
+
+# Rider
+.idea/
+*.sln.iml
+
+# DotCover
+*.dotCover
+
+# Localhistory
+.localhistory/
+
+# JetBrains IDEs
+.idea/
+*.sln.iml
+
+# Other files and folders to ignore
+_ReSharper*/
+*.[Rr]e[Ss]harper
+*.DotSettings
+
+# Backup & report files from converting an old project file
+*_UpgradeReport_Files/
+Backup*/
+UpgradeLog*.XML
+UpgradeLog*.htm
+ServiceFabricBackup/
+
+# Others
+*.vspscc
+*.vssscc
+
+# Environment files
+.env
+.env.*
+
+# Ignore node_modules if using Node.js tooling
+node_modules/
+
+# Ignore generated files from code generation tools
+Generated_Code/
+
+# Ignore test coverage tool output
+coverage/
+*.coverage
+*.coveragexml

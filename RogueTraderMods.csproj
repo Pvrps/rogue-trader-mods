@@ -1,0 +1,68 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net481</TargetFramework>
+    <OutputType>Library</OutputType>
+    <DebugType>portable</DebugType> <!-- Crucial -->
+    <DebugSymbols>true</DebugSymbols> <!-- Crucial -->
+    <Optimize>false</Optimize>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <GeneratePackageOnBuild>false</GeneratePackageOnBuild>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Reference Include="0Harmony">
+      <HintPath>.\lib\0Harmony.dll</HintPath>
+    </Reference>
+    <Reference Include="Code">
+      <HintPath>.\lib\Code.dll</HintPath>
+    </Reference>
+    <Reference Include="RogueTrader.GameCore">
+      <HintPath>.\lib\RogueTrader.GameCore.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEngine">
+      <HintPath>.\lib\UnityEngine.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEngine.CoreModule">
+      <HintPath>.\lib\UnityEngine.CoreModule.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEngine.IMGUIModule">
+      <HintPath>.\lib\UnityEngine.IMGUIModule.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityModManager">
+      <HintPath>.\lib\UnityModManager.dll</HintPath>
+    </Reference>
+    <Reference Include="Kingmaker.EntitySystem.Stats.Base">
+      <HintPath>.\lib\Kingmaker.EntitySystem.Stats.Base.dll</HintPath>
+    </Reference>
+    <Reference Include="Kingmaker.Enums">
+      <HintPath>.\lib\Kingmaker.Enums.dll</HintPath>
+    </Reference>
+    <Reference Include="StateHasher">
+      <HintPath>.\lib\StateHasher.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEngine.InputLegacyModule">
+      <HintPath>.\lib\UnityEngine.InputLegacyModule.dll</HintPath>
+    </Reference>
+    <Reference Include="Newtonsoft.Json">
+      <HintPath>.\lib\Newtonsoft.Json.dll</HintPath>
+    </Reference>
+    <Reference Include="Unity.TextMeshPro">
+      <HintPath>.\lib\Unity.TextMeshPro.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEngine.UI">
+      <HintPath>.\lib\UnityEngine.UI.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+
+  <Target Name="PostBuild" AfterTargets="PostBuildEvent">
+    <Exec
+      Command='
+      if "$(ConfigurationName)"=="Debug" (
+        xcopy /Y /D "$(TargetDir)$(TargetName).dll" "C:\Users\Purps\AppData\LocalLow\Owlcat Games\Warhammer 40000 Rogue Trader\UnityModManager\Purps\"
+        xcopy /Y /D "$(TargetDir)$(TargetName).pdb" "C:\Users\Purps\AppData\LocalLow\Owlcat Games\Warhammer 40000 Rogue Trader\UnityModManager\Purps\"
+      )
+    ' />
+  </Target>
+
+</Project>
