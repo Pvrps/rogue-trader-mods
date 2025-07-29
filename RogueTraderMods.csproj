@@ -3,11 +3,20 @@
   <PropertyGroup>
     <TargetFramework>net481</TargetFramework>
     <OutputType>Library</OutputType>
-    <DebugType>portable</DebugType> <!-- Crucial -->
-    <DebugSymbols>true</DebugSymbols> <!-- Crucial -->
-    <Optimize>false</Optimize>
-    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <DebugType>portable</DebugType>
+    <DebugSymbols>true</DebugSymbols>
     <GeneratePackageOnBuild>false</GeneratePackageOnBuild>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)' == 'Debug'">
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <Optimize>false</Optimize>
+  </PropertyGroup>
+
+  <!-- Release configuration settings -->
+  <PropertyGroup Condition="'$(Configuration)' == 'Release'">
+    <DefineConstants>TRACE</DefineConstants>
+    <Optimize>true</Optimize>
   </PropertyGroup>
 
   <ItemGroup>
@@ -61,10 +70,8 @@
   <Target Name="PostBuild" AfterTargets="PostBuildEvent">
     <Exec
       Command='
-      if "$(ConfigurationName)"=="Debug" (
         xcopy /Y /D "$(TargetDir)$(TargetName).dll" "C:\Users\Purps\AppData\LocalLow\Owlcat Games\Warhammer 40000 Rogue Trader\UnityModManager\Purps\"
         xcopy /Y /D "$(TargetDir)$(TargetName).pdb" "C:\Users\Purps\AppData\LocalLow\Owlcat Games\Warhammer 40000 Rogue Trader\UnityModManager\Purps\"
-      )
     ' />
   </Target>
 
