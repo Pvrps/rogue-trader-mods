@@ -74,10 +74,12 @@ namespace Purps.RogueTrader.Behaviours
 
         private void TrackFireWithin(StringBuilder sb)
         {
-            var fireWithinBlueprint = buffs.Find(b => b.Blueprint.AssetGuid == Constants.PyromancyHeartOfMagmaTalentCounterBuff);
+            var fireWithinBlueprint = buffs.Find(buff => buff.Blueprint.AssetGuid == Constants.PyromancyHeartOfMagmaTalentCounterBuff);
             sb.Append($"<color=white>Fire Within ({fireWithinBlueprint?.Rank ?? 0})</color> ");
 
-            var bonusEnabled = bonuses.Exists(b => b.Blueprint.AssetGuid == Constants.PyromancyHeartOfMagmaTalentFeature);
+            var bonusEnabled = bonuses.Exists(bonus =>
+                bonus.Blueprint.AssetGuid == Constants.PyromancyHeartOfMagmaTalentFeature ||
+                bonus.Blueprint.AssetGuid == Constants.PyromancyHeartOfMagmaTalentChargeBuff);
             sb.AppendLine($"<color={(bonusEnabled ? "green" : "red")}>{(bonusEnabled ? "Enabled" : "Disabled")}</color>");
         }
     }
