@@ -16,7 +16,6 @@ namespace Purps.RogueTrader
     public static class Main
     {
         internal static Harmony harmonyInstance;
-        private static readonly List<GameObject> modObjects = new List<GameObject>();
 
         public static Settings settings;
 
@@ -54,48 +53,31 @@ namespace Purps.RogueTrader
         {
             harmonyInstance?.UnpatchAll(harmonyInstance.Id);
 
-            foreach (GameObject go in modObjects)
-            {
-                if (go != null)
-                    Object.Destroy(go);
-            }
-            modObjects.Clear();
-
             PluginLogger.Log("Unloaded mod.");
             return true;
         }
 
         private static bool OnToggle(UnityModManager.ModEntry modEntry, bool value)
         {
-            if (value)
-            {
-                if (!modObjects.Any(go => go != null))
-                {
-                    RegisterGameObject<OverlayBehaviour>();
-                }
-            }
-            else
-            {
-                foreach (GameObject go in modObjects)
-                {
-                    if (go != null)
-                    {
-                        Object.Destroy(go);
-                    }
-                }
-                modObjects.Clear();
-            }
-
             return true;
         }
 
-        private static void RegisterGameObject<T>() where T : Component
+        public static void RegisterGameObject<T>() where T : Component
         {
             GameObject gameObject = new GameObject("Purps :: " + typeof(T).Name);
             Object.DontDestroyOnLoad(gameObject);
             gameObject.AddComponent<T>();
+        }
 
-            modObjects.Add(gameObject);
+        public static void UnregisterGameObject<T>() where T : Component
+        {
+            string objectName = "Purps :: " + typeof(T).Name;
+            GameObject gameObject = GameObject.Find(objectName);
+
+            if (gameObject != null)
+            {
+                Object.Destroy(gameObject);
+            }
         }
     }
 }

@@ -18,7 +18,7 @@ using static Kingmaker.UnitLogic.Parts.UnitPartBonusAbility;
 
 namespace Purps.RogueTrader.Behaviours
 {
-    public class OverlayBehaviour : MonoBehaviour
+    public class CombatOverlayBehaviour : MonoBehaviour
     {
         private static readonly List<Buff> buffs = new List<Buff>();
         private static readonly List<EntityFactSource> bonuses = new List<EntityFactSource>();
