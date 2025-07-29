@@ -53,6 +53,9 @@
     <Reference Include="UnityEngine.UI">
       <HintPath>.\lib\UnityEngine.UI.dll</HintPath>
     </Reference>
+    <Reference Include="Owlcat.Runtime.UI">
+      <HintPath>.\lib\Owlcat.Runtime.UI.dll</HintPath>
+    </Reference>
   </ItemGroup>
 
   <Target Name="PostBuild" AfterTargets="PostBuildEvent">

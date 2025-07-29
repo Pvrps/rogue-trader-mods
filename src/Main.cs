@@ -53,7 +53,7 @@ namespace Purps.RogueTrader
             {
                 if (!ModObjects.Any(go => go != null))
                 {
-                    RegisterGameObject<DebugOverlayBehaviour>();
+                    RegisterGameObject<OverlayBehaviour>();
                 }
             }
             else
