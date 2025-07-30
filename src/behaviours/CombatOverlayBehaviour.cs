@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Text;
 using Kingmaker;
@@ -18,19 +19,20 @@ namespace Purps.RogueTrader.Behaviours
         private static readonly List<EntityFactSource> bonuses = new List<EntityFactSource>();
 
         private bool isInCombat = false;
+        private BaseUnitEntity selectedEntity;
 
         public void Update()
         {
             buffs.Clear();
             bonuses.Clear();
             isInCombat = false;
+            selectedEntity = null;
 
             if (!ShouldDrawOverlay())
             {
                 return;
             }
 
-            BaseUnitEntity entity = null;
             Game instance = Game.Instance;
             if (instance != null)
             {
@@ -43,16 +45,16 @@ namespace Purps.RogueTrader.Behaviours
                     {
                         if (baseUnit.IsDirectlyControllable && baseUnit.IsSelected)
                         {
-                            entity = baseUnit;
+                            selectedEntity = baseUnit;
                             break;
                         }
                     }
                 }
             }
 
-            if (entity != null)
+            if (selectedEntity != null)
             {
-                TrackCombatStuff(entity);
+                TrackCombatStuff(selectedEntity);
             }
         }
 
@@ -108,13 +110,17 @@ namespace Purps.RogueTrader.Behaviours
                 return;
             }
 
-            var fireWithinBlueprint = buffs.Find(buff => buff.Blueprint.AssetGuid == Constants.PyromancyHeartOfMagmaTalentCounterBuff);
-            sb.Append($"<color=white>Fire Within ({fireWithinBlueprint?.Rank ?? 0})</color> ");
+            bool hasFireWithin = selectedEntity.Progression.Features.Enumerable.Exists(feature => feature.Blueprint.AssetGuid == Constants.PyromancyHeartOfMagmaTalentFeature);
+            if (hasFireWithin)
+            {
+                var fireWithinBlueprint = buffs.Find(buff => buff.Blueprint.AssetGuid == Constants.PyromancyHeartOfMagmaTalentCounterBuff);
+                sb.Append($"<color=white>Fire Within ({fireWithinBlueprint?.Rank ?? 0})</color> ");
 
-            var bonusEnabled = bonuses.Exists(bonus =>
-                bonus.Blueprint.AssetGuid == Constants.PyromancyHeartOfMagmaTalentFeature ||
-                bonus.Blueprint.AssetGuid == Constants.PyromancyHeartOfMagmaTalentChargeBuff);
-            sb.AppendLine($"<color={(bonusEnabled ? "green" : "red")}>{(bonusEnabled ? "Enabled" : "Disabled")}</color>");
+                var bonusEnabled = bonuses.Exists(bonus =>
+                    bonus.Blueprint.AssetGuid == Constants.PyromancyHeartOfMagmaTalentFeature ||
+                    bonus.Blueprint.AssetGuid == Constants.PyromancyHeartOfMagmaTalentChargeBuff);
+                sb.AppendLine($"<color={(bonusEnabled ? "green" : "red")}>{(bonusEnabled ? "Enabled" : "Disabled")}</color>");
+            }
         }
     }
 }
