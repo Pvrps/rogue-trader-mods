@@ -1,6 +1,3 @@
-using System;
-using Purps.RogueTrader.Behaviours;
-using Purps.RogueTrader.Logging;
 using UnityEngine;
 
 namespace Purps.RogueTrader
@@ -11,47 +8,33 @@ namespace Purps.RogueTrader
         {
             GUILayout.BeginVertical("box");
 
-            Main.settings.toggleAllowAchievementsDuringModdedGame = GUILayout.Toggle(
-                Main.settings.toggleAllowAchievementsDuringModdedGame,
+            Main.settings.ToggleAllowAchievementsDuringModdedGame = GUILayout.Toggle(
+                Main.settings.ToggleAllowAchievementsDuringModdedGame,
                 "Allow Achievements During Modded Game",
                 GUILayout.Width(1000)
             );
 
-            bool toggleCombatOverlay = Main.settings.toggleCombatOverlay;
-            Main.settings.toggleCombatOverlay = GUILayout.Toggle(
-                Main.settings.toggleCombatOverlay,
+            bool oldToggle = Main.settings.ToggleCombatOverlay;
+            bool newToggle = Main.settings.ToggleCombatOverlay = GUILayout.Toggle(
+                Main.settings.ToggleCombatOverlay,
                 "Shows helpful information during combat",
                 GUILayout.Width(1000)
             );
-            if (Main.settings.toggleCombatOverlay != toggleCombatOverlay)
+            if (oldToggle != newToggle)
             {
-                if (Main.settings.toggleCombatOverlay)
-                {
-                    Main.RegisterGameObject<CombatOverlayBehaviour>();
-                }
-                else
-                {
-                    Main.UnregisterGameObject<CombatOverlayBehaviour>();
-                }
+                Main.settings.ToggleCombatOverlay = newToggle;
             }
 
 #if DEBUG
-            bool toggleDebugOverlay = Main.settings.toggleDebugOverlay;
-            Main.settings.toggleDebugOverlay = GUILayout.Toggle(
-                Main.settings.toggleDebugOverlay,
+            oldToggle = Main.settings.ToggleDebugOverlay;
+            newToggle = Main.settings.ToggleDebugOverlay = GUILayout.Toggle(
+                Main.settings.ToggleDebugOverlay,
                 "Shows debugging information",
                 GUILayout.Width(1000)
             );
-            if (Main.settings.toggleDebugOverlay != toggleDebugOverlay)
+            if (oldToggle != newToggle)
             {
-                if (Main.settings.toggleDebugOverlay)
-                {
-                    Main.RegisterGameObject<DebugOverlayBehaviour>();
-                }
-                else
-                {
-                    Main.UnregisterGameObject<DebugOverlayBehaviour>();
-                }
+                Main.settings.ToggleDebugOverlay = newToggle;
             }
 #endif
 

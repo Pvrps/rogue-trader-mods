@@ -1,11 +1,7 @@
 ﻿using HarmonyLib;
 using UnityModManagerNet;
 using UnityEngine;
-using Kingmaker.Blueprints;
-using System.Linq;
-using System.Collections.Generic;
 using Purps.RogueTrader.Logging;
-using Purps.RogueTrader.Behaviours;
 using System.Reflection;
 
 namespace Purps.RogueTrader
@@ -16,7 +12,6 @@ namespace Purps.RogueTrader
     public static class Main
     {
         internal static Harmony harmonyInstance;
-
         public static Settings settings;
 
         public static bool Load(UnityModManager.ModEntry modEntry)
@@ -24,7 +19,6 @@ namespace Purps.RogueTrader
             settings = UnityModManager.ModSettings.Load<Settings>(modEntry);
 
             PluginLogger.Init(modEntry.Path);
-            PluginLogger.Log("Initializing...");
 
             harmonyInstance = new Harmony(modEntry.Info.Id);
             harmonyInstance.PatchAll(Assembly.GetExecutingAssembly());
@@ -34,7 +28,7 @@ namespace Purps.RogueTrader
             modEntry.OnSaveGUI = OnSaveGUI;
             modEntry.OnGUI = OnGUI;
 
-            PluginLogger.Log("Loaded successfully.");
+            settings.OnLoad();
 
             return true;
         }
@@ -53,7 +47,6 @@ namespace Purps.RogueTrader
         {
             harmonyInstance?.UnpatchAll(harmonyInstance.Id);
 
-            PluginLogger.Log("Unloaded mod.");
             return true;
         }
 
@@ -64,7 +57,12 @@ namespace Purps.RogueTrader
 
         public static void RegisterGameObject<T>() where T : Component
         {
-            GameObject gameObject = new GameObject("Purps :: " + typeof(T).Name);
+            string objectName = "Purps :: " + typeof(T).Name;
+            if (GameObject.Find(objectName) != null)
+            {
+                return;
+            }
+            GameObject gameObject = new GameObject(objectName);
             Object.DontDestroyOnLoad(gameObject);
             gameObject.AddComponent<T>();
         }

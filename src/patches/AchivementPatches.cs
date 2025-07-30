@@ -16,7 +16,7 @@ namespace Purps.RogueTrader.Patches
         {
             public static void Postfix(ref bool __result, AchievementEntity __instance)
             {
-                if (!settings.toggleAllowAchievementsDuringModdedGame) return;
+                if (!settings.ToggleAllowAchievementsDuringModdedGame) return;
 
                 if (!__instance.Data.OnlyMainCampaign && Game.Instance.Player.Campaign && !Game.Instance.Player.Campaign.IsMainGameContent)
                 {
@@ -35,7 +35,7 @@ namespace Purps.RogueTrader.Patches
         {
             public static void Postfix(ref bool __result)
             {
-                if (settings.toggleAllowAchievementsDuringModdedGame)
+                if (settings.ToggleAllowAchievementsDuringModdedGame)
                 {
                     __result = false;
                     return;

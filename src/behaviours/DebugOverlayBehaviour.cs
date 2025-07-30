@@ -1,29 +1,129 @@
-using System;
 using System.Collections.Generic;
-using System.Text;
-using Kingmaker;
-using Kingmaker.Code.UI.MVVM;
-using Kingmaker.Code.UI.MVVM.VM.ServiceWindows;
-using Kingmaker.EntitySystem;
+using System.Linq;
 using Kingmaker.EntitySystem.Entities;
-using Kingmaker.UnitLogic.Buffs;
-using Kingmaker.UnitLogic.Parts;
+using Purps.RogueTrader.API.Menu;
+using Purps.RogueTrader.API.Unit;
 using UnityEngine;
-using static Kingmaker.UnitLogic.Parts.UnitPartBonusAbility;
 
 namespace Purps.RogueTrader.Behaviours
 {
     public class DebugOverlayBehaviour : MonoBehaviour
     {
-
         private Texture2D blackTexture;
-        private GUIStyle featureStyle;
+        private GUIStyle tabButtonStyle;
+        private GUIStyle tableButtonStyle;
         private GUIStyle labelStyle;
-        private Vector2 scrollPos;
+        private Vector2 tableScrollPos;
 
-        private static readonly StringBuilder featuresSb = new StringBuilder();
+        private class DebugTableTab
+        {
+            public string Label;
+            public List<string> Lines = new List<string>();
+        }
 
-        public void Awake()
+        private List<DebugTableTab> tabs = new List<DebugTableTab>();
+        private int activeTabIndex = 0;
+
+        public void Update()
+        {
+            EnsureInitialized();
+
+            tabs.Clear();
+
+            if (RTMenu.IsOpen())
+            {
+                return;
+            }
+
+            BaseUnitEntity entity = RTUnit.GetSelectedUnit();
+            if (entity == null)
+            {
+                return;
+            }
+
+            var featuresTab = new DebugTableTab { Label = "Features" };
+            foreach (var feature in entity.Progression.Features)
+            {
+                string name = feature.Blueprint.Name;
+                featuresTab.Lines.Add($"{(string.IsNullOrEmpty(name) ? "XXXXXXXX" : name)} ({feature.Blueprint.AssetGuid})");
+            }
+            tabs.Add(featuresTab);
+
+            var bonusesTab = new DebugTableTab { Label = "Bonuses" };
+            foreach (var bonus in RTUnit.GetBonusAbilities())
+            {
+                string name = bonus.Source.Blueprint.name;
+                bonusesTab.Lines.Add($"{(string.IsNullOrEmpty(name) ? "XXXXXXXX" : name)} ({bonus.Source.Blueprint.AssetGuid})");
+            }
+            tabs.Add(bonusesTab);
+
+            if (activeTabIndex >= tabs.Count) activeTabIndex = 0;
+        }
+
+        public void OnGUI()
+        {
+            EnsureInitialized();
+
+            if (tabs.Count == 0) return;
+
+            float startX = 20f;
+            float startY = 20f;
+            float tabWidth = 160f;
+            string longestTabLabel = tabs.Max(tab => tab.Label.Length) > 0
+                ? tabs.OrderByDescending(tab => tab.Label.Length).First().Label
+                : "Sample";
+            float tabHeight = tabButtonStyle.CalcSize(new GUIContent(longestTabLabel)).y + 8f;
+            float tabSpacing = 6f;
+
+            // Draw tabs
+            for (int i = 0; i < tabs.Count; i++)
+            {
+                float tabPosX = startX + i * (tabWidth + tabSpacing);
+                bool isActive = i == activeTabIndex;
+
+                Color origColor = GUI.backgroundColor;
+                if (isActive)
+                    GUI.backgroundColor = Color.gray;
+
+                if (GUI.Button(new Rect(tabPosX, startY, tabWidth, tabHeight), tabs[i].Label, tabButtonStyle))
+                {
+                    activeTabIndex = i;
+                }
+                GUI.backgroundColor = origColor;
+            }
+
+            // Draw the active tab's table
+            var activeTab = tabs[activeTabIndex];
+            float tableX = startX;
+            float tableY = startY + tabHeight + 16f;
+            float tableWidth = 800f;
+            float maxTableHeight = 600f;
+            string sampleCell = activeTab.Lines.Count > 0
+                ? activeTab.Lines.OrderByDescending(s => s.Length).First()
+                : "Sample";
+            float cellHeight = tableButtonStyle.CalcSize(new GUIContent(sampleCell)).y + 8f;
+            float totalHeight = cellHeight * activeTab.Lines.Count;
+            float scrollHeight = Mathf.Min(maxTableHeight, totalHeight);
+
+            Rect tableRect = new Rect(tableX, tableY, tableWidth, scrollHeight);
+            Rect innerRect = new Rect(0, 0, tableWidth - 20f, totalHeight);
+            GUI.DrawTexture(tableRect, blackTexture);
+
+            tableScrollPos = GUI.BeginScrollView(tableRect, tableScrollPos, innerRect);
+
+            for (int i = 0; i < activeTab.Lines.Count; i++)
+            {
+                if (string.IsNullOrWhiteSpace(activeTab.Lines[i])) continue;
+                Rect lineRect = new Rect(0, i * cellHeight, innerRect.width, cellHeight);
+                if (GUI.Button(lineRect, activeTab.Lines[i], tableButtonStyle))
+                {
+                    GUIUtility.systemCopyBuffer = activeTab.Lines[i];
+                }
+            }
+            GUI.EndScrollView();
+        }
+
+        private void EnsureInitialized()
         {
             if (blackTexture == null)
             {
@@ -31,104 +131,21 @@ namespace Purps.RogueTrader.Behaviours
                 blackTexture.SetPixel(0, 0, Color.black);
                 blackTexture.Apply();
             }
-
-            featureStyle = new GUIStyle(GUI.skin.button)
+            if (tabButtonStyle == null)
             {
-                fontSize = 20,
-                wordWrap = true
-            };
-            featureStyle.normal.textColor = Color.white;
-
-            labelStyle = new GUIStyle(GUI.skin.label)
-            {
-                fontSize = 20
-            };
-            labelStyle.normal.textColor = Color.white;
-        }
-
-        public void Update()
-        {
-            featuresSb.Clear();
-
-            BaseUnitEntity entity = null;
-            Game instance = Game.Instance;
-            if (instance != null)
-            {
-                PersistentState state = instance.State;
-                if (state != null)
-                {
-                    EntityPool<BaseUnitEntity> allBaseUnits = state.AllBaseUnits;
-
-                    foreach (BaseUnitEntity baseUnit in allBaseUnits)
-                    {
-                        if (baseUnit.IsDirectlyControllable && baseUnit.IsSelected)
-                        {
-                            entity = baseUnit;
-                            break;
-                        }
-                    }
-                }
+                tabButtonStyle = new GUIStyle(GUI.skin.button) { fontSize = 20, wordWrap = false, margin = new RectOffset(4, 4, 0, 0), padding = new RectOffset(10, 10, 6, 6) };
+                tabButtonStyle.normal.textColor = Color.white;
             }
-
-            if (entity != null)
+            if (tableButtonStyle == null)
             {
-                foreach (var feature in entity.Progression.Features)
-                {
-                    string name = feature.Blueprint.Name;
-                    featuresSb.AppendLine($"{(string.IsNullOrEmpty(name) ? "XXXXXXXX" : name)} ({feature.Blueprint.AssetGuid})");
-                }
+                tableButtonStyle = new GUIStyle(GUI.skin.button) { fontSize = 18, wordWrap = true };
+                tableButtonStyle.normal.textColor = Color.white;
             }
-        }
-
-        public void OnGUI()
-        {
-            DrawFeatures();
-        }
-
-        private void DrawFeatures()
-        {
-            // Calculate label size dynamically
-            string labelText = "Features";
-            Vector2 labelSize = labelStyle.CalcSize(new GUIContent(labelText));
-            float labelX = 20f;
-            float labelY = 20f;
-            float labelWidth = labelSize.x;
-            float labelHeight = labelSize.y;
-
-            // Draw the label
-            GUI.Label(new Rect(labelX, labelY, labelWidth, labelHeight), labelText, labelStyle);
-
-            // Prepare feature list
-            string[] lines = featuresSb.ToString().Split('\n');
-            float lineHeight = featureStyle.CalcSize(new GUIContent("Sample")).y + 8f; // Add a bit of padding
-
-            // Position scroll area directly below label
-            float scrollX = labelX;
-            float scrollY = labelY + labelHeight + 10f; // 10px padding below label
-            float scrollWidth = 800f; // Or Screen.width - 40f for dynamic width
-            float maxScrollHeight = 600f; // Or Screen.height - scrollY - 20f
-
-            float totalScrollHeight = lineHeight * lines.Length;
-            float scrollHeight = Mathf.Min(maxScrollHeight, totalScrollHeight);
-
-            Rect outerRect = new Rect(scrollX, scrollY, scrollWidth, scrollHeight);
-            Rect innerRect = new Rect(0, 0, scrollWidth - 20f, totalScrollHeight);
-
-            GUI.DrawTexture(outerRect, blackTexture);
-
-            scrollPos = GUI.BeginScrollView(outerRect, scrollPos, innerRect);
-
-            for (int i = 0; i < lines.Length; i++)
+            if (labelStyle == null)
             {
-                Rect lineRect = new Rect(0, i * lineHeight, innerRect.width, lineHeight);
-                if (GUI.Button(lineRect, lines[i], featureStyle))
-                {
-                    GUIUtility.systemCopyBuffer = lines[i];
-                    Debug.Log("Copied GUID: " + lines[i]);
-                }
+                labelStyle = new GUIStyle(GUI.skin.label) { fontSize = 20 };
+                labelStyle.normal.textColor = Color.white;
             }
-
-            GUI.EndScrollView();
         }
     }
 }
