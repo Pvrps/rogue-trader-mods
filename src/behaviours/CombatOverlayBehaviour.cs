@@ -1,18 +1,12 @@
-using System;
 using System.Collections.Generic;
 using System.Text;
 using Kingmaker;
-using Kingmaker.Blueprints;
 using Kingmaker.Code.UI.MVVM;
-using Kingmaker.Code.UI.MVVM.VM.EscMenu;
 using Kingmaker.Code.UI.MVVM.VM.ServiceWindows;
 using Kingmaker.EntitySystem;
 using Kingmaker.EntitySystem.Entities;
-using Kingmaker.EntitySystem.Persistence;
 using Kingmaker.UnitLogic.Buffs;
-using Kingmaker.UnitLogic.Buffs.Blueprints;
 using Kingmaker.UnitLogic.Parts;
-using Purps.RogueTrader.Logging;
 using UnityEngine;
 using static Kingmaker.UnitLogic.Parts.UnitPartBonusAbility;
 

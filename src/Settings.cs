@@ -6,6 +6,7 @@ namespace Purps.RogueTrader
     {
         public bool toggleAllowAchievementsDuringModdedGame = true;
         public bool toggleCombatOverlay = true;
+        public bool toggleDebugOverlay = true;
 
         public override void Save(UnityModManager.ModEntry modEntry) => Save(this, modEntry);
     }

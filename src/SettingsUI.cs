@@ -35,6 +35,24 @@ namespace Purps.RogueTrader
                 }
             }
 
+            bool toggleDebugOverlay = Main.settings.toggleDebugOverlay;
+            Main.settings.toggleDebugOverlay = GUILayout.Toggle(
+                Main.settings.toggleDebugOverlay,
+                "Shows debugging information",
+                GUILayout.Width(1000)
+            );
+            if (Main.settings.toggleDebugOverlay != toggleDebugOverlay)
+            {
+                if (Main.settings.toggleDebugOverlay)
+                {
+                    Main.RegisterGameObject<DebugOverlayBehaviour>();
+                }
+                else
+                {
+                    Main.UnregisterGameObject<DebugOverlayBehaviour>();
+                }
+            }
+
             GUILayout.EndVertical();
         }
     }

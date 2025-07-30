@@ -24,7 +24,7 @@ namespace Purps.RogueTrader.Patches
                     return;
                 }
                 BlueprintCampaignReference specificCampaign = __instance.Data.SpecificCampaign;
-                BlueprintCampaign blueprintCampaign = ((specificCampaign != null) ? specificCampaign.Get() : null);
+                BlueprintCampaign blueprintCampaign = specificCampaign?.Get();
                 __result = !__instance.Data.OnlyMainCampaign && blueprintCampaign != null && Game.Instance.Player.Campaign != blueprintCampaign;
             }
         }
