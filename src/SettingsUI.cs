@@ -35,6 +35,7 @@ namespace Purps.RogueTrader
                 }
             }
 
+#if DEBUG
             bool toggleDebugOverlay = Main.settings.toggleDebugOverlay;
             Main.settings.toggleDebugOverlay = GUILayout.Toggle(
                 Main.settings.toggleDebugOverlay,
@@ -52,6 +53,7 @@ namespace Purps.RogueTrader
                     Main.UnregisterGameObject<DebugOverlayBehaviour>();
                 }
             }
+#endif
 
             GUILayout.EndVertical();
         }
