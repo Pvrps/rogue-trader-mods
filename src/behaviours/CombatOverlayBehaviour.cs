@@ -1,10 +1,14 @@
 using System.Collections.Generic;
+using System.Drawing;
+using System.Linq;
 using System.Text;
+using Kingmaker.EntitySystem.Entities;
 using Kingmaker.UnitLogic.Buffs;
 using Purps.RogueTrader.API.Menu;
 using Purps.RogueTrader.API.Unit;
 using UnityEngine;
 using static Kingmaker.UnitLogic.Parts.UnitPartBonusAbility;
+using Color = UnityEngine.Color;
 
 namespace Purps.RogueTrader.Behaviours
 {
@@ -13,49 +17,94 @@ namespace Purps.RogueTrader.Behaviours
         private static readonly Dictionary<string, Buff> buffs = new Dictionary<string, Buff>();
         private static readonly Dictionary<string, BonusAbilityData> bonuses = new Dictionary<string, BonusAbilityData>();
 
+        private Texture2D backgroundTexture;
+        private GUIStyle labelStyle;
+
         public void Update()
         {
             buffs.Clear();
-            bonuses.Clear();
+            CombatOverlayBehaviour.bonuses.Clear();
 
-            if (RTMenu.IsOpen() || !RTUnit.IsInCombat())
+            BaseUnitEntity selectedUnit = RTUnit.GetSelectedUnit();
+
+            if (RTMenu.IsOpen() || !RTUnit.IsInCombat(selectedUnit))
             {
                 return;
             }
 
-            var buff = RTUnit.GetBuff(Constants.PyromancyHeartOfMagmaTalentCounterBuff);
+            var buff = RTUnit.GetBuff(Constants.PyromancyHeartOfMagmaTalentCounterBuff, selectedUnit);
             if (buff != null)
             {
                 buffs[buff.Blueprint.AssetGuid] = buff;
             }
 
-            var bonus = RTUnit.GetBonusAbility(Constants.PyromancyHeartOfMagmaTalentFeature) ??
-                        RTUnit.GetBonusAbility(Constants.PyromancyHeartOfMagmaTalentChargeBuff);
-            if (bonus != null)
+            List<BonusAbilityData> bonuses = RTUnit.GetBonusAbilities(new[] { Constants.PyromancyHeartOfMagmaTalentFeature, Constants.PyromancyHeartOfMagmaTalentChargeBuff }, selectedUnit);
+            if (bonuses != null && bonuses.Count > 0)
             {
-                bonuses[bonus.Source.Blueprint.AssetGuid] = bonus;
+                foreach (var bonus in bonuses)
+                {
+                    CombatOverlayBehaviour.bonuses[bonus.Source.Blueprint.AssetGuid] = bonus;
+                }
             }
         }
 
         public void OnGUI()
         {
-            if (RTMenu.IsOpen() || !RTUnit.IsInCombat())
+            BaseUnitEntity selectedUnit = RTUnit.GetSelectedUnit();
+
+            if (RTMenu.IsOpen() || !RTUnit.IsInCombat(selectedUnit))
             {
                 return;
             }
 
             StringBuilder sb = new StringBuilder();
 
-            if (RTUnit.HasFeature(Constants.PyromancyHeartOfMagmaTalentFeature))
+            if (RTUnit.HasFeature(Constants.PyromancyHeartOfMagmaTalentFeature, selectedUnit))
             {
                 sb.Append($"<color=white>Fire Within ({(buffs.TryGetValue(Constants.PyromancyHeartOfMagmaTalentCounterBuff, out var buff) ? buff?.Rank ?? 0 : 0)})</color> ");
 
-                var bonusEnabled = bonuses.ContainsKey(Constants.PyromancyHeartOfMagmaTalentFeature)
-                                || bonuses.ContainsKey(Constants.PyromancyHeartOfMagmaTalentChargeBuff);
-                sb.AppendLine($"<color={(bonusEnabled ? "green" : "red")}>{(bonusEnabled ? "Enabled" : "Disabled")}</color>");
+
+                var keysToCheck = new[] {
+                    Constants.PyromancyHeartOfMagmaTalentFeature,
+                    Constants.PyromancyHeartOfMagmaTalentChargeBuff
+                };
+
+                int enabledCount = keysToCheck.Count(key => bonuses.ContainsKey(key));
+
+                string color = enabledCount > 0 ? "green" : "red";
+                string statusText = enabledCount > 0 ? $"Enabled ({enabledCount})" : "Disabled";
+
+                sb.AppendLine($"<color={color}>{statusText}</color>");
             }
 
-            GUI.Label(new Rect(20, 20, 1000, 40), $"<size=32>{sb}</size>");
+            EnsureInitialized();
+
+            string richText = sb.ToString();
+            Vector2 size = labelStyle.CalcSize(new GUIContent(richText));
+            Rect rect = new Rect(20, 20, size.x, 40);
+
+            GUI.Label(rect, sb.ToString(), labelStyle);
+        }
+
+        private void EnsureInitialized()
+        {
+            if (backgroundTexture == null)
+            {
+                backgroundTexture = new Texture2D(1, 1);
+                backgroundTexture.SetPixel(0, 0, new Color(0, 0, 0, 0.75f)); // semi-transparent black
+                backgroundTexture.Apply();
+            }
+
+            if (labelStyle == null)
+            {
+                labelStyle = new GUIStyle(GUI.skin.box)
+                {
+                    fontSize = 28,
+                    richText = true,
+                    padding = new RectOffset(10, 10, 5, 5),
+                    normal = { background = backgroundTexture }
+                };
+            }
         }
     }
 }

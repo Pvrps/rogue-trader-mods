@@ -34,7 +34,7 @@ namespace Purps.RogueTrader.API.Unit
             return null;
         }
 
-        public static bool HasFeature(string guid, BaseUnitEntity unit = null)
+        public static bool HasFeature(string guid, BaseUnitEntity unit)
         {
             return (unit ?? GetSelectedUnit())?
                 .Progression
@@ -43,34 +43,47 @@ namespace Purps.RogueTrader.API.Unit
                 .Exists(feature => feature.Blueprint.AssetGuid == guid) ?? false;
         }
 
-        public static bool IsInCombat(BaseUnitEntity unit = null)
+        public static bool IsInCombat(BaseUnitEntity unit)
         {
             return (unit ?? GetSelectedUnit())?.IsInCombat ?? false;
         }
 
-        public static Buff GetBuff(string guid, BaseUnitEntity unit = null)
+        public static Buff GetBuff(string guid, BaseUnitEntity unit)
         {
             return (unit ?? GetSelectedUnit())?.Buffs.Enumerable.FirstOrDefault(buff => buff.Blueprint.AssetGuid == guid) ?? null;
         }
 
-        public static List<BonusAbilityData> GetBonusAbilities(BaseUnitEntity unit = null)
+        public static List<BonusAbilityData> GetBonusAbilities(BaseUnitEntity unit)
         {
             UnitPartBonusAbility bonusAbility = (unit ?? GetSelectedUnit()).GetBonusAbilityUseOptional();
             var field = typeof(UnitPartBonusAbility).GetField("m_Bonuses", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance);
             return field.GetValue(bonusAbility) as List<BonusAbilityData>;
         }
 
-        public static BonusAbilityData GetBonusAbility(string guid, BaseUnitEntity unit = null)
+        public static List<BonusAbilityData> GetBonusAbilities()
         {
+            return GetBonusAbilities(null);
+        }
+
+        public static List<BonusAbilityData> GetBonusAbilities(IEnumerable<string> guids, BaseUnitEntity unit)
+        {
+            var guidSet = new HashSet<string>(guids);
+            List<BonusAbilityData> bonuses = new List<BonusAbilityData>();
+
             foreach (var bonus in GetBonusAbilities(unit))
             {
-                if (bonus.Source.Blueprint.AssetGuid == guid)
+                if (guidSet.Contains(bonus.Source.Blueprint.AssetGuid))
                 {
-                    return bonus;
+                    bonuses.Add(bonus);
                 }
             }
 
-            return null;
+            return bonuses;
+        }
+
+        public static List<BonusAbilityData> GetBonusAbilities(string guid, BaseUnitEntity unit)
+        {
+            return GetBonusAbilities(new[] { guid }, unit);
         }
     }
 }
