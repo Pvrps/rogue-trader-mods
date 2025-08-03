@@ -3,6 +3,7 @@ using System.Linq;
 using Kingmaker;
 using Kingmaker.EntitySystem;
 using Kingmaker.EntitySystem.Entities;
+using Kingmaker.UnitLogic;
 using Kingmaker.UnitLogic.Buffs;
 using Kingmaker.UnitLogic.Parts;
 using static Kingmaker.UnitLogic.Parts.UnitPartBonusAbility;

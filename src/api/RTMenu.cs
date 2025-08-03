@@ -7,15 +7,7 @@ namespace Purps.RogueTrader.API.Menu
     {
         public static bool IsOpen()
         {
-            return RootUIContext.Instance.IsBlockedFullScreenUIType()
-            || RootUIContext.Instance.CurrentServiceWindow != ServiceWindowsType.None
-            || RootUIContext.Instance.FullScreenUIType != Kingmaker.UI.Models.FullScreenUIType.Unknown
-            || RootUIContext.Instance.GroupChangerIsShown
-            || RootUIContext.Instance.IsInventoryShow
-            || RootUIContext.Instance.IsMainMenu
-            || RootUIContext.Instance.IsLoadingScreen
-            || RootUIContext.Instance.IsCharInfoAbilitiesChooseMode
-            || RootUIContext.Instance.IsCharInfoLevelProgression;
+            return RootUIContext.Instance.IsBlockedFullScreenUIType();
         }
     }
 }

@@ -27,7 +27,7 @@ namespace Purps.RogueTrader.Behaviours
 
             BaseUnitEntity selectedUnit = RTUnit.GetSelectedUnit();
 
-            if (RTMenu.IsOpen() || !RTUnit.IsInCombat(selectedUnit))
+            if (RTMenu.IsOpen() || !RTUnit.IsInCombat(selectedUnit) || !selectedUnit.CanAct)
             {
                 return;
             }
@@ -52,7 +52,7 @@ namespace Purps.RogueTrader.Behaviours
         {
             BaseUnitEntity selectedUnit = RTUnit.GetSelectedUnit();
 
-            if (RTMenu.IsOpen() || !RTUnit.IsInCombat(selectedUnit))
+            if (RTMenu.IsOpen() || !RTUnit.IsInCombat(selectedUnit) || !selectedUnit.CanAct)
             {
                 return;
             }
@@ -62,7 +62,6 @@ namespace Purps.RogueTrader.Behaviours
             if (RTUnit.HasFeature(Constants.PyromancyHeartOfMagmaTalentFeature, selectedUnit))
             {
                 sb.Append($"<color=white>Fire Within ({(buffs.TryGetValue(Constants.PyromancyHeartOfMagmaTalentCounterBuff, out var buff) ? buff?.Rank ?? 0 : 0)})</color> ");
-
 
                 var keysToCheck = new[] {
                     Constants.PyromancyHeartOfMagmaTalentFeature,
@@ -81,7 +80,7 @@ namespace Purps.RogueTrader.Behaviours
 
             string richText = sb.ToString();
             Vector2 size = labelStyle.CalcSize(new GUIContent(richText));
-            Rect rect = new Rect(20, 20, size.x, 40);
+            Rect rect = new Rect(20, 20, size.x, 45);
 
             GUI.Label(rect, sb.ToString(), labelStyle);
         }
@@ -99,7 +98,7 @@ namespace Purps.RogueTrader.Behaviours
             {
                 labelStyle = new GUIStyle(GUI.skin.box)
                 {
-                    fontSize = 28,
+                    fontSize = 32,
                     richText = true,
                     padding = new RectOffset(10, 10, 5, 5),
                     normal = { background = backgroundTexture }

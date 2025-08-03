@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.Linq;
+using Kingmaker.Code.UI.MVVM;
 using Kingmaker.EntitySystem.Entities;
 using Purps.RogueTrader.API.Menu;
 using Purps.RogueTrader.API.Unit;
@@ -56,6 +57,10 @@ namespace Purps.RogueTrader.Behaviours
                 bonusesTab.Lines.Add($"{(string.IsNullOrEmpty(name) ? "XXXXXXXX" : name)} ({bonus.Source.Blueprint.AssetGuid})");
             }
             tabs.Add(bonusesTab);
+
+            var statesTab = new DebugTableTab { Label = "States" };
+            statesTab.Lines.Add($"FullScreenUIType: {RootUIContext.Instance.FullScreenUIType}");
+            tabs.Add(statesTab);
 
             if (activeTabIndex >= tabs.Count) activeTabIndex = 0;
         }
